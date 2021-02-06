@@ -1,13 +1,6 @@
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-
 import static javax.swing.JFrame.EXIT_ON_CLOSE;
 import java.awt.Toolkit;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.util.stream.Stream;
 import java.awt.Dimension;
 
 /**

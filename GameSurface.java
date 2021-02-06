@@ -76,7 +76,7 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
             return;
         }
 
-        Image img2 = Toolkit.getDefaultToolkit().getImage("windows.jpg");
+        Image img2 = Toolkit.getDefaultToolkit().getImage("images/windows.jpg");
         g.drawImage(img2, 0, 0, d.width, d.height, this);
         g.getClipBounds();
 
@@ -98,7 +98,7 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
         }
 
         // draw the space ship
-        Image img1 = Toolkit.getDefaultToolkit().getImage("birb.png");
+        Image img1 = Toolkit.getDefaultToolkit().getImage("images/birb.png");
         g.drawImage(img1, spaceShip.x, spaceShip.y, spaceShip.width, spaceShip.height, this);
         spaceShip.translate(0, 2);
 
