@@ -28,6 +28,7 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
     private List<Rectangle> pillars;
     private Rectangle spaceShip;
     private int score;
+    private int highScore;
 
 
     public GameSurface(final int width, final int height) {
@@ -36,6 +37,7 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
         this.spaceShip = new Rectangle(200, width / 2 - 15, 50, 50);
         this.timer = new Timer(16, this);
         this.tick = 0;
+        this.highScore = 0;
         addPillar(width, height);
     }
     
@@ -56,11 +58,17 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
         final Dimension d = this.getSize();
         
         if (gameOver) {
+            // if the current score is greater than high score then high score equals score
+            if (score > highScore) {
+                highScore = score;
+            }
             g.setColor(Color.blue);
             g.fillRect(0, 0, d.width, d.height);
             g.setColor(Color.black);
             g.setFont(new Font("Arial", Font.BOLD, 25));
-            g.drawString("Test Test!!", d.width / 2 - 150, d.height / 2);
+            g.drawString("Score: " + score, 0, WIDTH * WIDTH + 20); //
+            g.drawString("Highscore: " + highScore, 0, WIDTH * WIDTH + 40); //
+            g.drawString("Game Over!", d.width / 2 - 150, d.height / 2);
             return;
         }
 
