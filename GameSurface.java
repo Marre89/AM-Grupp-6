@@ -15,9 +15,8 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 /**
- * A simple panel with a space invaders "game" in it. This is just to
- * demonstrate the bare minimum of stuff than can be done drawing on a panel.
- * This is by no means very good code.
+ *
+ * 
  * 
  */
 public class GameSurface extends JPanel implements ActionListener, KeyListener {
@@ -25,6 +24,7 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
 
     private boolean gameOver;
     private Timer timer;
+    private long tick;
     private List<Rectangle> pillars;
     private Rectangle spaceShip;
     private int score;
@@ -33,11 +33,10 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
     public GameSurface(final int width, final int height) {
         this.gameOver = false;
         this.pillars = new ArrayList<>();
-
-        addPillar(width, height);
-    
         this.spaceShip = new Rectangle(200, width / 2 - 15, 50, 50);
-        this.timer = new Timer(1, this);
+        this.timer = new Timer(16, this);
+        this.tick = 0;
+        addPillar(width, height);
     }
     
     @Override
@@ -51,19 +50,8 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
         int y = 300;
         int x = 800;
         pillars.add(new Rectangle(x, y, 100, 500));
-    
-
     }
 
-    /*
-     * private void gravity(Rectangle spaceShip) { int y = pos.nextInt(); }
-     */
-    /**
-     * Call this method when the graphics needs to be repainted on the graphics
-     * surface.
-     * 
-     * @param g the graphics to paint on
-     */
     private void repaint(Graphics g) {
         final Dimension d = this.getSize();
         
@@ -81,18 +69,8 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
         g.getClipBounds();
 
         for (Rectangle pillar : pillars) {
-            /*
-             * FontMetrics metrics = g.getFontMetrics(getFont()); int x = alien.x +
-             * (alien.width - metrics.stringWidth(text)) /2-24; int y = alien.y +
-             * ((alien.height - metrics.getHeight()) / 2) + metrics.getAscent();
-             */
             g.setColor(Color.blue);
             g.fillRect(pillar.x, pillar.y, pillar.width, pillar.height);
-
-            /*
-             * g.setColor(Color.white); g.setFont(new Font("Arial", Font.BOLD, 20));
-             * g.drawString(text, x, y);
-             */
             g.setFont(new Font("Arial", Font.BOLD, 25));
             g.drawString(String.valueOf(score), 700, 50);
         }
@@ -102,15 +80,11 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
         g.drawImage(img1, spaceShip.x, spaceShip.y, spaceShip.width, spaceShip.height, this);
         spaceShip.translate(0, 2);
 
-        
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // this will trigger on the timer event
-        // if the game is not over yet it will
-        // update the positions of all aliens
-        // and check for collision with the space ship
+        final Dimension d = this.getSize();
 
         if (gameOver) {
             timer.stop();
@@ -120,13 +94,11 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
         final List<Rectangle> toRemove = new ArrayList<>();
 
         for (Rectangle pillar : pillars) {
-            pillar.translate(-3, 0);
+            pillar.translate(-6, 0);
             if (pillar.x + pillar.width < 0) {
                 score += 10;
                 toRemove.add(pillar);
             }
-
-            
 
             if (pillar.intersects(spaceShip)) {
                 gameOver = true;
@@ -136,13 +108,10 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
 
         pillars.removeAll(toRemove);
 
-         // final Rectangle plane = new Rectangle(getBounds());
-
-        // add new aliens for every one that was removed
-        for (int i = 0; i < toRemove.size(); ++i) {
-            Dimension d = getSize();
+        if(++tick % 120 == 0) {
             addPillar(d.width, d.height);
         }
+       
         this.repaint();
     }
 
