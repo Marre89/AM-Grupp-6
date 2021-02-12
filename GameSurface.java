@@ -49,15 +49,14 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         repaint(g);
-        
     }
 
     private void addPillar(final int width, final int height) {
         int random = ThreadLocalRandom.current().nextInt(0, 200);
-        pillars.add(new Rectangle(800, 0, 100, 300 - random));     //Upper pillar
-        pillars.add(new Rectangle(800, 400 - random, 100, 600)); //Lower pillar
-        
+        pillars.add(new Rectangle(800, 0, 100, 300 - random));   //Upper pillar
+        pillars.add(new Rectangle(800, 500 - random, 100, 400)); //Lower pillar
     }
+
     private void repaint(Graphics g) {
         final Dimension d = this.getSize();
         
@@ -75,7 +74,6 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
             g.drawString("Game Over!", d.width / 2 - 150, d.height / 2);
             return;
         }
-
             // background
             g.drawImage(backGround, 0, 0, d.width, d.height, this);
         
@@ -88,7 +86,7 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
         
         // draw the space ship
         g.drawImage(birbImg, birb.x, birb.y, birb.width, birb.height, this);
-        birb.translate(0, 3);
+        birb.translate(0, 4);
         }
 
     @Override
@@ -109,9 +107,8 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
             }
 
             if (pillar.intersects(birb)) {
-                gameOver = false;
+                gameOver = true;
             }
-            
         }
 
         pillars.removeAll(toRemove);
