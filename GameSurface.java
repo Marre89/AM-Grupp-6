@@ -26,6 +26,7 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
     private Timer timer;
     private long tick;
     private List<Rectangle> pillars;
+    private List<Rectangle> holes;
     private Rectangle spaceShip;
     private int score;
     private int highScore;
@@ -34,11 +35,13 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
     public GameSurface(final int width, final int height) {
         this.gameOver = false;
         this.pillars = new ArrayList<>();
+        this.holes = new ArrayList<>();
         this.spaceShip = new Rectangle(200, width / 2 - 15, 50, 50);
         this.timer = new Timer(16, this);
         this.tick = 0;
         this.highScore = 0;
         addPillar(width, height);
+        addHoles(width, height);
     }
     
     @Override
@@ -52,6 +55,11 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
         int y = 300;
         int x = 800;
         pillars.add(new Rectangle(x, y, 100, 500));
+    }
+    private void addHoles(final int width, final int height){
+    	int x = 800;
+    	int y = ThreadLocalRandom.current().nextInt(100, 200);
+    	holes.add(new Rectangle(x, y, 100, 200));
     }
 
     private void repaint(Graphics g) {
@@ -82,6 +90,10 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
             g.setFont(new Font("Arial", Font.BOLD, 25));
             g.drawString(String.valueOf(score), 700, 50);
         }
+        
+        for(Rectangle hole : holes) {
+        	g.setColor(Color.black);
+        	g.fillRect(hole.x, hole.y, hole.width, hole.height);
 
         // draw the space ship
         Image img1 = Toolkit.getDefaultToolkit().getImage("images/birb.png");
@@ -118,7 +130,25 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
 
         if(++tick % 120 == 0) {
             addPillar(d.width, d.height);
+            addHoles(d.width, d.height);
         }
+        
+        final List<Rectangle> toRemoveHoles = new ArrayList<>();
+
+        for (Rectangle hole : holes) {
+            hole.translate(-6, 0);
+            if (hole.x + hole.width < 0) {
+                score += 10;
+                toRemoveHoles.add(hole);
+            }
+
+            if (hole.intersects(spaceShip)) {
+                gameOver = false;
+            }
+            
+        }
+
+        pillars.removeAll(toRemoveHoles);
        
         this.repaint();
     }
