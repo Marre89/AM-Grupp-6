@@ -9,6 +9,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.awt.Image;
 import java.awt.Toolkit;
 import javax.swing.JPanel;
@@ -100,6 +101,7 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
         g.drawImage(img1, spaceShip.x, spaceShip.y, spaceShip.width, spaceShip.height, this);
         spaceShip.translate(0, 2);
 
+        }
     }
 
     @Override
