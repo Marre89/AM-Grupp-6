@@ -42,7 +42,6 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
         this.tick = 0;
         this.highScore = 0;
         addPillar(width, height);
-        addHoles(width, height);
     }
     
     @Override
@@ -53,16 +52,13 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
     }
 
     private void addPillar(final int width, final int height) {
-        int y = 300;
+        int random = ThreadLocalRandom.current().nextInt(0, 100);
         int x = 800;
-        pillars.add(new Rectangle(x, y, 100, 500));
+        pillars.add(new Rectangle(x, 0, 100, 200 - random));     //Upper pillar
+        pillars.add(new Rectangle(x, 400 - random, 100, 400));  //Lower pillar
+        pillars.add(new Rectangle(1200, 0, 100, 200 + random));     //Upper pillar
+        pillars.add(new Rectangle(1200, 400 + random, 100, 400));
     }
-    private void addHoles(final int width, final int height){
-    	int x = 800;
-    	int y = ThreadLocalRandom.current().nextInt(100, 200);
-    	holes.add(new Rectangle(x, y, 100, 200));
-    }
-
     private void repaint(Graphics g) {
         final Dimension d = this.getSize();
         
@@ -88,13 +84,8 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
         for (Rectangle pillar : pillars) {
             g.setColor(Color.blue);
             g.fillRect(pillar.x, pillar.y, pillar.width, pillar.height);
-            g.setFont(new Font("Arial", Font.BOLD, 25));
-            g.drawString(String.valueOf(score), 700, 50);
         }
         
-        for(Rectangle hole : holes) {
-        	g.setColor(Color.black);
-        	g.fillRect(hole.x, hole.y, hole.width, hole.height);
 
         // draw the space ship
         Image img1 = Toolkit.getDefaultToolkit().getImage("images/birb.png");
@@ -102,7 +93,6 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
         spaceShip.translate(0, 2);
 
         }
-    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -123,7 +113,7 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
             }
 
             if (pillar.intersects(spaceShip)) {
-                gameOver = true;
+                gameOver = false;
             }
             
         }
@@ -131,8 +121,7 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
         pillars.removeAll(toRemove);
 
         if(++tick % 120 == 0) {
-            addPillar(d.width, d.height);
-            addHoles(d.width, d.height);
+            addPillar(d.width, d.height);;
         }
         
         final List<Rectangle> toRemoveHoles = new ArrayList<>();
