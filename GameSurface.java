@@ -30,8 +30,9 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
     private Rectangle birb;
     private int score;
     private int highScore;
-
-
+    private Image birbImg;
+    private Image backGround;
+    
     public GameSurface(final int width, final int height) {
         this.gameOver = false;
         this.pillars = new ArrayList<>();
@@ -39,6 +40,8 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
         this.timer = new Timer(16, this);
         this.tick = 0;
         this.highScore = 0;
+        this.backGround = Toolkit.getDefaultToolkit().getImage("images/windows.jpg");
+        this.birbImg = Toolkit.getDefaultToolkit().getImage("images/birb.png");
         addPillar(width, height);
     }
     
@@ -50,10 +53,9 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
     }
 
     private void addPillar(final int width, final int height) {
-        int random = ThreadLocalRandom.current().nextInt(0, 150);
-        int x = 800;
-        pillars.add(new Rectangle(x, 0, 100, 200 - random));     //Upper pillar
-        pillars.add(new Rectangle(x, 400 - random, 100, 400)); //Lower pillar
+        int random = ThreadLocalRandom.current().nextInt(0, 200);
+        pillars.add(new Rectangle(800, 0, 100, 300 - random));     //Upper pillar
+        pillars.add(new Rectangle(800, 400 - random, 100, 600)); //Lower pillar
         
     }
     private void repaint(Graphics g) {
@@ -74,8 +76,8 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
             return;
         }
 
-        Image img2 = Toolkit.getDefaultToolkit().getImage("images/windows.jpg");
-            g.drawImage(img2, 0, 0, d.width, d.height, this);
+            // background
+            g.drawImage(backGround, 0, 0, d.width, d.height, this);
         
 
         for (Rectangle pillar : pillars) {
@@ -84,12 +86,9 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
             g.drawString("Score: " + score, 0, WIDTH * WIDTH + 20);
         }
         
-
         // draw the space ship
-        Image img1 = Toolkit.getDefaultToolkit().getImage("images/birb.png");
-        g.drawImage(img1, birb.x, birb.y, birb.width, birb.height, this);
-        birb.translate(0, 2);
-
+        g.drawImage(birbImg, birb.x, birb.y, birb.width, birb.height, this);
+        birb.translate(0, 3);
         }
 
     @Override
