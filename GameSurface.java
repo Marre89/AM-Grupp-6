@@ -27,8 +27,7 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
     private Timer timer;
     private long tick;
     private List<Rectangle> pillars;
-    private List<Rectangle> holes;
-    private Rectangle spaceShip;
+    private Rectangle birb;
     private int score;
     private int highScore;
 
@@ -36,8 +35,7 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
     public GameSurface(final int width, final int height) {
         this.gameOver = false;
         this.pillars = new ArrayList<>();
-        this.holes = new ArrayList<>();
-        this.spaceShip = new Rectangle(200, width / 2 - 15, 50, 50);
+        this.birb = new Rectangle(200, width / 2 - 15, 50, 50);
         this.timer = new Timer(16, this);
         this.tick = 0;
         this.highScore = 0;
@@ -52,12 +50,11 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
     }
 
     private void addPillar(final int width, final int height) {
-        int random = ThreadLocalRandom.current().nextInt(0, 100);
+        int random = ThreadLocalRandom.current().nextInt(0, 150);
         int x = 800;
         pillars.add(new Rectangle(x, 0, 100, 200 - random));     //Upper pillar
-        pillars.add(new Rectangle(x, 400 - random, 100, 400));  //Lower pillar
-        pillars.add(new Rectangle(1200, 0, 100, 200 + random));     //Upper pillar
-        pillars.add(new Rectangle(1200, 400 + random, 100, 400));
+        pillars.add(new Rectangle(x, 400 - random, 100, 400)); //Lower pillar
+        
     }
     private void repaint(Graphics g) {
         final Dimension d = this.getSize();
@@ -78,19 +75,20 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
         }
 
         Image img2 = Toolkit.getDefaultToolkit().getImage("images/windows.jpg");
-        g.drawImage(img2, 0, 0, d.width, d.height, this);
-        g.getClipBounds();
+            g.drawImage(img2, 0, 0, d.width, d.height, this);
+        
 
         for (Rectangle pillar : pillars) {
             g.setColor(Color.blue);
             g.fillRect(pillar.x, pillar.y, pillar.width, pillar.height);
+            g.drawString("Score: " + score, 0, WIDTH * WIDTH + 20);
         }
         
 
         // draw the space ship
         Image img1 = Toolkit.getDefaultToolkit().getImage("images/birb.png");
-        g.drawImage(img1, spaceShip.x, spaceShip.y, spaceShip.width, spaceShip.height, this);
-        spaceShip.translate(0, 2);
+        g.drawImage(img1, birb.x, birb.y, birb.width, birb.height, this);
+        birb.translate(0, 2);
 
         }
 
@@ -108,11 +106,10 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
         for (Rectangle pillar : pillars) {
             pillar.translate(-6, 0);
             if (pillar.x + pillar.width < 0) {
-                score += 10;
                 toRemove.add(pillar);
             }
 
-            if (pillar.intersects(spaceShip)) {
+            if (pillar.intersects(birb)) {
                 gameOver = false;
             }
             
@@ -120,26 +117,14 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
 
         pillars.removeAll(toRemove);
 
-        if(++tick % 120 == 0) {
-            addPillar(d.width, d.height);;
-        }
-        
-        final List<Rectangle> toRemoveHoles = new ArrayList<>();
-
-        for (Rectangle hole : holes) {
-            hole.translate(-6, 0);
-            if (hole.x + hole.width < 0) {
-                score += 10;
-                toRemoveHoles.add(hole);
-            }
-
-            if (hole.intersects(spaceShip)) {
-                gameOver = false;
-            }
-            
+        if(++tick % 60 == 0) {
+            addPillar(d.width, d.height);
+            score += 10;
         }
 
-        pillars.removeAll(toRemoveHoles);
+        if(birb.y + birb.height > d.getHeight()) {
+            gameOver = true;
+        }
        
         this.repaint();
     }
@@ -157,11 +142,11 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         final int minHeight = 10;
-        final int maxHeight = this.getSize().height - spaceShip.height - 10;
+        final int maxHeight = this.getSize().height - birb.height - 10;
         final int kc = e.getKeyCode();
 
-        if (kc == KeyEvent.VK_SPACE && spaceShip.y > minHeight && spaceShip.y < maxHeight) {
-            spaceShip.translate(0, -100);
+        if (kc == KeyEvent.VK_SPACE && birb.y > minHeight && birb.y < maxHeight) {
+            birb.translate(0, -100);
         }
         if (kc == KeyEvent.VK_SPACE) {
             this.timer.start();
