@@ -1,5 +1,9 @@
 import javax.swing.JFrame;
+
 import static javax.swing.JFrame.EXIT_ON_CLOSE;
+
+
+
 
 
 /**
@@ -11,7 +15,6 @@ public class App {
   
     public static void main(String[] args) {
         JFrame main = new JFrame("Jumpy Birb");
-
         GameSurface gs = new GameSurface(800, 600);
 
         main.setSize(800, 600);
@@ -20,5 +23,7 @@ public class App {
         main.addKeyListener(gs);
         main.setDefaultCloseOperation(EXIT_ON_CLOSE);
         main.setVisible(true);
+        
     }
 }
+

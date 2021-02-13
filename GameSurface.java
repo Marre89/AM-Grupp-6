@@ -12,8 +12,11 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.awt.Image;
 import java.awt.Toolkit;
+
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+
 
 /**
  *
@@ -32,6 +35,7 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
     private int highScore;
     private Image birbImg;
     private Image backGround;
+    private JButton restartButton;
     
     public GameSurface(final int width, final int height) {
         this.gameOver = false;
@@ -57,7 +61,7 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
         pillars.add(new Rectangle(800, 500 - random, 100, 400)); //Lower pillar
     }
 
-    private void repaint(Graphics g) {
+    public void repaint(Graphics g) {
         final Dimension d = this.getSize();
         
         if (gameOver) {
@@ -65,13 +69,23 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
             if (score > highScore) {
                 highScore = score;
             }
+
+            JButton restartButton = new JButton("Restart");
+            restartButton.setText("Restart");
+            restartButton.setSize(120, 40);
+            restartButton.setLocation(d.width / 2 - 100, d.height / 2);
+            this.add(restartButton);
+            restartButton.addActionListener(this);
+
             g.setColor(Color.blue);
             g.fillRect(0, 0, d.width, d.height);
             g.setColor(Color.black);
             g.setFont(new Font("Arial", Font.BOLD, 25));
             g.drawString("Score: " + score, 0, WIDTH * WIDTH + 20); //
             g.drawString("Highscore: " + highScore, 0, WIDTH * WIDTH + 40); //
-            g.drawString("Game Over!", d.width / 2 - 150, d.height / 2);
+            g.drawString("Game Over!", d.width / 2 - 110, d.height / 2 - 20);
+            
+            
             return;
         }
             // background
@@ -121,6 +135,11 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
         if(birb.y + birb.height > d.getHeight()) {
             gameOver = true;
         }
+
+        if (e.getSource() == restartButton) {
+            // Need to Add restart function on click
+
+        }
        
         this.repaint();
     }
@@ -148,4 +167,5 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
             this.timer.start();
         }
     }
+
 }
