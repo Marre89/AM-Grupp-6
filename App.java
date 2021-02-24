@@ -1,11 +1,5 @@
 import javax.swing.JFrame;
-
 import static javax.swing.JFrame.EXIT_ON_CLOSE;
-
-
-
-
-
 /**
  * This is a very small "game" just to show the absolute basics of
  * how to draw on a surface in a frame using Swing/AWT.
@@ -23,7 +17,6 @@ public class App {
         main.addKeyListener(gs);
         main.setDefaultCloseOperation(EXIT_ON_CLOSE);
         main.setVisible(true);
-        
     }
 }
 
