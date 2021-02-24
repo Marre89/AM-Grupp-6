@@ -67,8 +67,8 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
         final Dimension d = this.getSize();
         if(gameOver) {    
             g.setColor(Color.blue);
-			g.fillRect(0, 0, d.width, d.height);
-			g.setColor(Color.black);
+		    g.fillRect(0, 0, d.width, d.height);
+		    g.setColor(Color.black);
 			g.setFont(new Font("Arial", Font.BOLD, 25));
 			g.drawString("Score: " + score,(d.width / 2) - 110, (d.height / 2) + 70); 
 			g.drawString("Highscore: " , (d.width / 2) - 110, (d.height / 2) + 90); 
@@ -85,8 +85,8 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
 		restartButton.setLocation(d.width / 2 - 100, d.height / 2);
         this.add(restartButton);
         restartButton.addActionListener(e -> {
-            resetGame();
-            this.repaint();
+        resetGame();
+        this.repaint();
         });
     }
     
@@ -140,14 +140,14 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
         final Dimension d = this.getSize();
         if (birb.y + birb.height > d.getHeight()) {
             gameOver = true;
+        }
     }
-}
 
     public void gameOver() {
         if (gameOver) {
 			timer.stop();
+        }
     }
-}
 	
     @Override
 	public void actionPerformed(ActionEvent e) {
