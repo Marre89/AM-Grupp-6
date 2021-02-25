@@ -23,23 +23,23 @@ import javax.swing.Timer;
  * 
  */
 public class GameSurface extends JPanel implements ActionListener, KeyListener {
-	private static final long serialVersionUID = 6260582674762246325L;
+    private static final long serialVersionUID = 6260582674762246325L;
 
-	private boolean gameOver;
-	private Timer timer;
-	private long tick;
-	private List<Rectangle> pillars;
-	private Rectangle birb;
-	private int score = 0;
-	private Image birbImg;
-	private Image backGround;
+    private boolean gameOver;
+    private Timer timer;
+    private long tick;
+    private List<Rectangle> pillars;
+    private Rectangle birb;
+    private int score = 0;
+    private Image birbImg;
+    private Image backGround;
 
-	public GameSurface(final int width, final int height) {
+    public GameSurface(final int width, final int height) {
             this.resetGame();
             this.backGround = Toolkit.getDefaultToolkit().getImage("images/windows.jpg");
             this.birbImg = Toolkit.getDefaultToolkit().getImage("images/birb.png");
         }
-	
+    
     public void resetGame() {
         this.gameOver = false;
         this.pillars = new ArrayList<>();
@@ -50,29 +50,29 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
         addPillar(); 
         this.repaint();
     }
-	
-	@Override
-	protected void paintComponent(Graphics g) {
-		super.paintComponent(g);
-		repaint(g);
-	}
+    
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        repaint(g);
+    }
 
-	private void addPillar() {
-		int random = ThreadLocalRandom.current().nextInt(0, 200);
-		pillars.add(new Rectangle(800, 0, 100, 300 - random)); // Upper pillar
-		pillars.add(new Rectangle(800, 500 - random, 100, 400)); // Lower pillar
-	}
+    private void addPillar() {
+        int random = ThreadLocalRandom.current().nextInt(0, 200);
+        pillars.add(new Rectangle(800, 0, 100, 300 - random)); // Upper pillar
+        pillars.add(new Rectangle(800, 500 - random, 100, 400)); // Lower pillar
+    }
 
     public void gameOverScreen(Graphics g) {
         final Dimension d = this.getSize();
         if(gameOver) {    
             g.setColor(Color.blue);
-		    g.fillRect(0, 0, d.width, d.height);
-		    g.setColor(Color.black);
-			g.setFont(new Font("Arial", Font.BOLD, 25));
-			g.drawString("Score: " + score,(d.width / 2) - 110, (d.height / 2) + 70); 
-			g.drawString("Highscore: " , (d.width / 2) - 110, (d.height / 2) + 90); 
-			g.drawString("Game Over!", d.width / 2 - 110, d.height / 2 - 20);
+            g.fillRect(0, 0, d.width, d.height);
+            g.setColor(Color.black);
+            g.setFont(new Font("Arial", Font.BOLD, 25));
+            g.drawString("Score: " + score,(d.width / 2) - 110, (d.height / 2) + 70); 
+            g.drawString("Highscore: " , (d.width / 2) - 110, (d.height / 2) + 90); 
+            g.drawString("Game Over!", d.width / 2 - 110, d.height / 2 - 20);
             resetButton();   
         }
     }
@@ -80,9 +80,9 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
     private void resetButton() {
         final Dimension d = this.getSize();
         JButton restartButton = new JButton("Restart");
-		restartButton.setText("Restart");
-		restartButton.setSize(120, 40);
-		restartButton.setLocation(d.width / 2 - 100, d.height / 2);
+        restartButton.setText("Restart");
+        restartButton.setSize(120, 40);
+        restartButton.setLocation(d.width / 2 - 100, d.height / 2);
         this.add(restartButton);
         restartButton.addActionListener(e -> {
         resetGame();
@@ -117,16 +117,16 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
 
     public void removePillars() {
         final List<Rectangle> toRemove = new ArrayList<>();
-		for (Rectangle pillar : pillars) {
-			pillar.translate(-6, 0);
-			if (pillar.x + pillar.width < 0) {
-				toRemove.add(pillar);
-			}
-			if (pillar.intersects(birb)) {
-				gameOver = true;
-			}
-		}
-		pillars.removeAll(toRemove);
+        for (Rectangle pillar : pillars) {
+            pillar.translate(-6, 0);
+            if (pillar.x + pillar.width < 0) {
+                toRemove.add(pillar);
+            }
+            if (pillar.intersects(birb)) {
+                gameOver = true;
+            }
+        }
+        pillars.removeAll(toRemove);
     }
 
     public void spawnPillarAndUpdateScore() {
@@ -145,45 +145,45 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
 
     public void gameOver() {
         if (gameOver) {
-			timer.stop();
+            timer.stop();
         }
     }
-	
+    
     @Override
-	public void actionPerformed(ActionEvent e) {
+    public void actionPerformed(ActionEvent e) {
         gameOver();
         removePillars();
         spawnPillarAndUpdateScore();
         birbtouchesGround();
-		this.repaint();
-	}
+        this.repaint();
+    }
 
-	@Override
-	public void keyReleased(KeyEvent e) {
-		//
-	}
+    @Override
+    public void keyReleased(KeyEvent e) {
+        //
+    }
 
-	@Override
-	public void keyTyped(KeyEvent e) {
-		// do nothing
-	}
+    @Override
+    public void keyTyped(KeyEvent e) {
+        // do nothing
+    }
 
-	@Override
-	public void keyPressed(KeyEvent e) {
-		final int minHeight = 10;
-		final int maxHeight = this.getSize().height - birb.height - 10;
-		final int kc = e.getKeyCode();
+    @Override
+    public void keyPressed(KeyEvent e) {
+        final int minHeight = 10;
+        final int maxHeight = this.getSize().height - birb.height - 10;
+        final int kc = e.getKeyCode();
 
-		if (kc == KeyEvent.VK_SPACE && birb.y > minHeight && birb.y < maxHeight) {
-			birb.translate(0, -100);
-		}
-		if (kc == KeyEvent.VK_SPACE) {
-			this.timer.start();
-		}
+        if (kc == KeyEvent.VK_SPACE && birb.y > minHeight && birb.y < maxHeight) {
+            birb.translate(0, -100);
+        }
+        if (kc == KeyEvent.VK_SPACE) {
+            this.timer.start();
+        }
         if(kc ==KeyEvent.VK_R) {
             resetGame();
         }
-	}
+    }
 }
 
-	
+    
