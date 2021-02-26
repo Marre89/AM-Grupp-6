@@ -13,6 +13,7 @@ public class App {
 
         main.setSize(800, 600);
         main.setResizable(false);
+        main.setLocationRelativeTo(null);
         main.add(gs);
         main.addKeyListener(gs);
         main.setDefaultCloseOperation(EXIT_ON_CLOSE);
