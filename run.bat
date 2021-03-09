@@ -1,0 +1,1 @@
+javac GameSurface.java && javac App.java && java App
