@@ -7,19 +7,24 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.awt.Image;
 import java.awt.Toolkit;
-// import javax.swing.JOptionPane;
-// import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
 /**
  * 
- *More work to be done!
+ * More work to be done!
  * 
  * 
  */
@@ -32,28 +37,30 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
     private List<Rectangle> pillars;
     private Rectangle birb;
     private int score = 0;
+    private String highScore = "";
     private Image birbImg;
     private Image backGround;
-    
-    
+    private Image pipe;
+
     public GameSurface(final int width, final int height) {
-            this.resetGame();
-            this.backGround = Toolkit.getDefaultToolkit().getImage("images/windows.jpg");
-            this.birbImg = Toolkit.getDefaultToolkit().getImage("images/birb.png");
-            
-        }
-    
+        this.resetGame();
+        this.pipe = Toolkit.getDefaultToolkit().getImage("images/pillartop.png");
+        this.backGround = Toolkit.getDefaultToolkit().getImage("images/windows.jpg");
+        this.birbImg = Toolkit.getDefaultToolkit().getImage("images/birb.png");
+
+    }
+
     public void resetGame() {
         this.gameOver = false;
         this.pillars = new ArrayList<>();
-        this.birb = new Rectangle(200, 400, 50, 50);
+        this.birb = new Rectangle(200, 400, 70, 70);
         this.timer = new Timer(16, this);
         this.tick = 0;
         this.score = 0;
-        addPillar(); 
+        addPillar();
         this.repaint();
     }
-    
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -68,38 +75,24 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
 
     public void gameOverScreen(Graphics g) {
         final Dimension d = this.getSize();
-        if(gameOver) {    
-            g.setColor(Color.blue);
+        if (gameOver) {
+            g.setColor(Color.CYAN);
             g.fillRect(0, 0, d.width, d.height);
             g.setColor(Color.black);
             g.setFont(new Font("Arial", Font.BOLD, 25));
-            g.drawString("Score: " + score,(d.width / 2) - 110, (d.height / 2) + 70); 
-            g.drawString("Highscore: " , (d.width / 2) - 110, (d.height / 2) + 90); 
-            g.drawString("Game Over!", d.width / 2 - 110, d.height / 2 - 20);
-            // resetButton();
-           // String name = JOptionPane.showInputDialog("What's your name?");   
+            g.drawImage(birbImg, (d.width / 2) - 80, 250, 150, 150, this);
+            g.drawString("Score: " + score, (d.width / 2) - 110, 100);
+            g.drawString("Highscore: " + highScore, (d.width / 2) - 110, 150);
+            g.drawString("Press ENTER to restart", (d.width / 2) - 110, 500);
+            g.drawString("GAME OVER!", (d.width / 2 - 110), 50);
         }
     }
-    /*
-    private void resetButton() {
-        final Dimension d = this.getSize();
-        JButton restartButton = new JButton("Restart");
-        restartButton.setText("Restart");
-        restartButton.setSize(120, 40);
-        restartButton.setLocation(d.width / 2 - 100, d.height / 2);
-        this.add(restartButton);
-        restartButton.addActionListener(e -> {
-        resetGame();
-        this.repaint();
-        });
-    }
-    */
-    
+
     private void paintPillars(Graphics g) {
         for (Rectangle pillar : pillars) {
-            g.setColor(Color.blue);
-            g.fillRect(pillar.x, pillar.y, pillar.width, pillar.height);
-            g.drawString("Score: " + score, 0, WIDTH * WIDTH + 20);
+            g.drawImage(pipe, pillar.x, pillar.y, pillar.width, pillar.height, null);
+            g.setFont(new Font("Arial", Font.BOLD, 15));
+            g.drawString("Score: " + score, 680, 20);
         }
     }
 
@@ -116,7 +109,7 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
     private void repaint(Graphics g) {
         paintBackground(g);
         paintPillars(g);
-        paintBirb(g);   
+        paintBirb(g);
         gameOverScreen(g);
     }
 
@@ -150,10 +143,74 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
 
     public void gameOver() {
         if (gameOver) {
+            if (highScore.equals("")) {
+                highScore = this.GetScore();
+            }
             timer.stop();
+            CheckScore();
         }
     }
-    
+
+    public void CheckScore() {
+
+		if (score > Integer.parseInt((highScore.split(":")[1]))) {
+
+			String name = JOptionPane.showInputDialog("What's your name?");
+			highScore = name + ":" + score;
+
+			File highScoreFile = new File("score.txt");
+
+
+			if (!highScoreFile.exists()) {
+				try {
+					highScoreFile.createNewFile();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+
+			FileWriter writeFile = null;
+			BufferedWriter writer = null;
+
+			try {
+			writeFile = new FileWriter(highScoreFile);
+			writer = new BufferedWriter(writeFile);
+			writer.write(this.highScore);
+
+			} catch (Exception e) {
+
+			} finally {
+				try {
+					if (writer != null)
+						writer.close();
+				} catch (Exception e) {
+
+				}
+			}
+		}
+	}
+
+    public String GetScore() {
+
+		FileReader readFile = null;
+		BufferedReader reader = null;
+
+		try {
+			readFile = new FileReader("score.txt");
+			reader = new BufferedReader(readFile);
+			return reader.readLine();
+		} catch (Exception e) {
+			return "Nobody:0";
+		} finally {
+			try {
+				if (reader != null)
+					reader.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
     @Override
     public void actionPerformed(ActionEvent e) {
         gameOver();
@@ -185,10 +242,8 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
         if (kc == KeyEvent.VK_SPACE) {
             this.timer.start();
         }
-        if(kc ==KeyEvent.VK_R) {
+        if (kc == KeyEvent.VK_ENTER) {
             resetGame();
         }
     }
 }
-
-    
