@@ -23,10 +23,11 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 /**
+ * Game Surface class is the class for rendering graphics and game logic.
  * 
- * More work to be done!
- * 
- * 
+ * @param tick            is used to set a specific interval which constrols
+ *                        pillar spawn rate.
+ * @param List<Rectangle> used for storing pillars.
  */
 public class GameSurface extends JPanel implements ActionListener, KeyListener {
     private static final long serialVersionUID = 6260582674762246325L;
@@ -42,6 +43,10 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
     private Image backGround;
     private Image pipe;
 
+    /**
+     * @param width  of the Game Surface
+     * @param height of the Game Surface
+     */
     public GameSurface(final int width, final int height) {
         this.resetGame();
         this.pipe = Toolkit.getDefaultToolkit().getImage("images/pillartop.png");
@@ -50,6 +55,9 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
 
     }
 
+    /**
+     * Sets the game variables to it's start value this.resetGame()
+     */
     public void resetGame() {
         this.gameOver = false;
         this.pillars = new ArrayList<>();
@@ -67,11 +75,20 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
         repaint(g);
     }
 
+    /**
+     * Adds a rectangle to pillar list with a random hole location.
+     */
+
     private void addPillar() {
         int random = ThreadLocalRandom.current().nextInt(0, 200);
         pillars.add(new Rectangle(800, 0, 100, 300 - random)); // Upper pillar
         pillars.add(new Rectangle(800, 500 - random, 100, 400)); // Lower pillar
     }
+
+    /**
+     * Draws a Game Over screen when gameOver = true.
+     * @param g
+     */
 
     public void gameOverScreen(Graphics g) {
         final Dimension d = this.getSize();
@@ -88,6 +105,10 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
         }
     }
 
+    /**
+     * Draws image on to the pillar rectangle.
+     */
+
     private void paintPillars(Graphics g) {
         for (Rectangle pillar : pillars) {
             g.drawImage(pipe, pillar.x, pillar.y, pillar.width, pillar.height, null);
@@ -96,16 +117,27 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
         }
     }
 
+    /**
+     * Draws background image.
+     */
     private void paintBackground(Graphics g) {
         final Dimension d = this.getSize();
         g.drawImage(backGround, 0, 0, d.width, d.height, this);
     }
 
+    /**
+     * Draws birb image on to birb location and controls the birb fall interval.
+     * @param g
+     */
     private void paintBirb(Graphics g) {
         g.drawImage(birbImg, birb.x, birb.y, birb.width, birb.height, this);
         birb.translate(0, 6);
     }
 
+    /**
+     * Paints all the methods on to the screen.
+     * @param g
+     */
     private void repaint(Graphics g) {
         paintBackground(g);
         paintPillars(g);
@@ -113,6 +145,10 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
         gameOverScreen(g);
     }
 
+    /**
+     * Remove pillars which are no longer visible and set the pillar speed. Checks
+     * if birb has intersected any pillar.
+     */
     public void removePillars() {
         final List<Rectangle> toRemove = new ArrayList<>();
         for (Rectangle pillar : pillars) {
@@ -134,6 +170,9 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
         }
     }
 
+    /**
+     * If birb touches ground gameOver = true.
+     */
     public void birbtouchesGround() {
         final Dimension d = this.getSize();
         if (birb.y + birb.height > d.getHeight()) {
@@ -141,75 +180,87 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
         }
     }
 
+    /**
+     * Stops the timer and calls getScore() and checkScore().
+     */
     public void gameOver() {
         if (gameOver) {
             if (highScore.equals("")) {
-                highScore = this.GetScore();
+                highScore = this.getScore();
             }
             timer.stop();
-            CheckScore();
+            checkScore();
         }
     }
 
-    public void CheckScore() {
+    /**
+     * Checks if the last score is higher than highScore. Creates a highScore file
+     * if no file exists also saves the name and score as a String. Input dialog box
+     * shows up if a player reached highScore.
+     */
+    public void checkScore() {
 
-		if (score > Integer.parseInt((highScore.split(":")[1]))) {
+        if (score > Integer.parseInt((highScore.split(":")[1]))) {
 
-			String name = JOptionPane.showInputDialog("What's your name?");
-			highScore = name + ":" + score;
+            String name = JOptionPane.showInputDialog("What's your name?");
+            highScore = name + ":" + score;
 
-			File highScoreFile = new File("score.txt");
+            File highScoreFile = new File("score.txt");
 
+            if (!highScoreFile.exists()) {
+                try {
+                    highScoreFile.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
 
-			if (!highScoreFile.exists()) {
-				try {
-					highScoreFile.createNewFile();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
+            FileWriter writeFile = null;
+            BufferedWriter writer = null;
 
-			FileWriter writeFile = null;
-			BufferedWriter writer = null;
+            try {
+                writeFile = new FileWriter(highScoreFile);
+                writer = new BufferedWriter(writeFile);
+                writer.write(this.highScore);
 
-			try {
-			writeFile = new FileWriter(highScoreFile);
-			writer = new BufferedWriter(writeFile);
-			writer.write(this.highScore);
+            } catch (Exception e) {
 
-			} catch (Exception e) {
+            } finally {
+                try {
+                    if (writer != null)
+                        writer.close();
+                } catch (Exception e) {
 
-			} finally {
-				try {
-					if (writer != null)
-						writer.close();
-				} catch (Exception e) {
+                }
+            }
+        }
+    }
 
-				}
-			}
-		}
-	}
+    /**
+     * Reads the highScore file.
+     * @return String if no highScore exits.
+     */
 
-    public String GetScore() {
+    public String getScore() {
 
-		FileReader readFile = null;
-		BufferedReader reader = null;
+        FileReader readFile = null;
+        BufferedReader reader = null;
 
-		try {
-			readFile = new FileReader("score.txt");
-			reader = new BufferedReader(readFile);
-			return reader.readLine();
-		} catch (Exception e) {
-			return "Nobody:0";
-		} finally {
-			try {
-				if (reader != null)
-					reader.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
+        try {
+            readFile = new FileReader("score.txt");
+            reader = new BufferedReader(readFile);
+            return reader.readLine();
+        } catch (Exception e) {
+            return "Nobody:0";
+        } finally {
+            try {
+                if (reader != null)
+                    reader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -222,7 +273,7 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
 
     @Override
     public void keyReleased(KeyEvent e) {
-        //
+        // do nothing
     }
 
     @Override
@@ -230,16 +281,16 @@ public class GameSurface extends JPanel implements ActionListener, KeyListener {
         // do nothing
     }
 
+    /**
+     * Start the game and make the birb jump by pressing the spacebar. Start a new
+     * game session by pressing Enter which resets the game.
+     */
     @Override
     public void keyPressed(KeyEvent e) {
-        final int minHeight = 10;
-        final int maxHeight = this.getSize().height - birb.height - 10;
         final int kc = e.getKeyCode();
 
-        if (kc == KeyEvent.VK_SPACE && birb.y > minHeight && birb.y < maxHeight) {
-            birb.translate(0, -100);
-        }
         if (kc == KeyEvent.VK_SPACE) {
+            birb.translate(0, -100);
             this.timer.start();
         }
         if (kc == KeyEvent.VK_ENTER) {
